@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -28,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(this, SensorService.class);
         bindService(intent,connection, Context.BIND_AUTO_CREATE);
+        findViewById(R.id.settingsButton).setOnClickListener(view -> {
+            Intent intent1 = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent1);
+        });
     }
 
     public synchronized void loadSensors() {

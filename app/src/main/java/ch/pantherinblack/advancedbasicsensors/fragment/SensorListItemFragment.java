@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import ch.pantherinblack.advancedbasicsensors.R;
-import ch.pantherinblack.advancedbasicsensors.activity.sensor.SensorActivity;
+import ch.pantherinblack.advancedbasicsensors.activity.SensorActivity;
 import ch.pantherinblack.advancedbasicsensors.service.SensorService;
 
 /**
@@ -82,13 +82,10 @@ public class SensorListItemFragment extends Fragment {
         linearLayout.setGravity(Gravity.CENTER);
         started = true;
 
-        getView().findViewById(R.id.fragmentLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(parent, SensorActivity.class);
-                intent.putExtra("type",sensor.getType());
-                startActivity(intent);
-            }
+        getView().findViewById(R.id.fragmentLayout).setOnClickListener(view -> {
+            Intent intent = new Intent(parent, SensorActivity.class);
+            intent.putExtra("type",sensor.getType());
+            startActivity(intent);
         });
     }
 
