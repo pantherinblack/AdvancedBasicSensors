@@ -12,8 +12,34 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AdvancedBasicSensors"
         tools:targetApi="31">
+        <service
+            android:name=".service.SettingsService"
+            android:enabled="true"
+            android:exported="true"></service>
+        <service
+            android:name=".service.WeatherService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.SensorService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.GPSService"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.sensor.HumiditySensorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.sensor.TemperatureSensorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
