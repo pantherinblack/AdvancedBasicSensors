@@ -11,7 +11,7 @@ public class ServiceManager extends Service {
     private final IBinder binder = new ServiceManagerBinder();
 
     public class ServiceManagerBinder extends Binder {
-        ServiceManager getService() {
+        public ServiceManager getService() {
             return ServiceManager.this;
         }
     }
