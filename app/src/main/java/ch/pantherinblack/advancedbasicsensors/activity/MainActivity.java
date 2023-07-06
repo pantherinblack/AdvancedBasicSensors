@@ -14,4 +14,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //TODO
     }
+
+    public void loadSensors() {
+        // TODO
+    }
+
+    public void ShowSensor(String name, String[] values) {
+        // TODO
+    }
 }
