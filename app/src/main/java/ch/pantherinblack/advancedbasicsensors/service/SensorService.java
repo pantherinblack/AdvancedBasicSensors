@@ -2,17 +2,17 @@ package ch.pantherinblack.advancedbasicsensors.service;
 
 import android.content.Context;
 import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.pantherinblack.advancedbasicsensors.listener.SensorEventListenerAdaption;
-
 public class SensorService extends ServiceManager {
-    List<SensorEventListenerAdaption> selaList;
+    List<Integer> allowedSensors = new ArrayList<>();
     List<Integer> accelerometer = new ArrayList<>();
     List<Integer> rotation = new ArrayList<>();
+
 
     public SensorService() {
         accelerometer.add(Sensor.TYPE_ACCELEROMETER);
@@ -22,35 +22,44 @@ public class SensorService extends ServiceManager {
         rotation.add(Sensor.TYPE_GAME_ROTATION_VECTOR);
         rotation.add(Sensor.TYPE_ROTATION_VECTOR);
         rotation.add(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR);
+
+        allowedSensors.addAll(accelerometer);
+        allowedSensors.addAll(rotation);
+        allowedSensors.add(Sensor.TYPE_GYROSCOPE);
+        allowedSensors.add(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        allowedSensors.add(Sensor.TYPE_MAGNETIC_FIELD);
+        allowedSensors.add(Sensor.TYPE_HEART_RATE);
+        allowedSensors.add(Sensor.TYPE_LIGHT);
+        allowedSensors.add(Sensor.TYPE_PRESSURE);
+        allowedSensors.add(Sensor.TYPE_PROXIMITY);
+        allowedSensors.add(Sensor.TYPE_RELATIVE_HUMIDITY);
+        allowedSensors.add(Sensor.TYPE_STEP_COUNTER);
+        allowedSensors.add(Sensor.TYPE_HINGE_ANGLE);
     }
 
-    public void addSensorEventListenerAdaption(SensorEventListenerAdaption sel, int sensorType) {
-        if (!selaList.contains(sel)) {
-            sel.setSensorType(sensorType);
-            SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-            sensorManager.registerListener(sel,
-                    sensorManager.getDefaultSensor(sensorType),
-                    SensorManager.SENSOR_DELAY_NORMAL);
-            selaList.add(sel);
-        } else {
-            throw new RuntimeException("SensorEventListenerAdaption is already in use.");
-        }
+    public void addSensorEventListener(SensorEventListener sel, int sensorType) {
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorManager.registerListener(sel,
+                sensorManager.getDefaultSensor(sensorType),
+                SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public List<Sensor> getAllSensors() {
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        return sensorManager.getSensorList(Sensor.TYPE_ALL);
-    }
+        List<Sensor> sensorList = new ArrayList<>();
 
-    public float[] getLatestData(int sensorType) {
-        for (SensorEventListenerAdaption sela : selaList) {
-            if (sela.getSensorType() == sensorType)
-                return sela.getLatestValue();
+        for (Sensor sensor : sensorManager.getSensorList(Sensor.TYPE_ALL)) {
+            if (sensorManager.getDefaultSensor(sensor.getType()) != null &&
+                    allowedSensors.contains(sensor.getType())) {
+                sensorList.add(sensor);
+                    }
         }
-        return null;
+        return sensorList;
     }
 
     public String[] getStringValues(Sensor sensor, float[] data) {
+        if (data == null || data.length == 0)
+            data = new float[]{1, 1, 1};
 
 
         List<String> strings = new ArrayList<>();
@@ -74,9 +83,9 @@ public class SensorService extends ServiceManager {
                     strings.add("Temp: " + data[0] + "°C");
                     break;
                 case Sensor.TYPE_MAGNETIC_FIELD:
-                    strings.add("x: " + data[0] + "uT, +/- "+ data[4] + "uT");
-                    strings.add("y: " + data[1] + "uT, +/- "+ data[5] + "uT");
-                    strings.add("z: " + data[2] + "uT, +/- "+ data[6] + "uT");
+                    strings.add("x: " + data[0] + "uT");
+                    strings.add("y: " + data[1] + "uT");
+                    strings.add("z: " + data[2] + "uT");
                     break;
                 case Sensor.TYPE_HEART_RATE:
                     strings.add("Rate: " + data[0] + "bpm");
@@ -99,10 +108,12 @@ public class SensorService extends ServiceManager {
                 case Sensor.TYPE_HINGE_ANGLE:
                     strings.add("Turn: "+ data[0] + "°");
                     break;
+                default:
+                    strings.add("Unknown Sensor");
             }
         }
 
-        return (String[]) strings.toArray(new String[0]);
+        return strings.toArray(new String[0]);
     }
 
 }

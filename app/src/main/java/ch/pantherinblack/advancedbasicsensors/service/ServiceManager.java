@@ -21,13 +21,4 @@ public class ServiceManager extends Service {
     public IBinder onBind(Intent intent) {
         return binder;
     }
-
-    public static ServiceManager createService() {
-        //TODO
-        return null;
-    }
-
-    public static void stopService() {
-        //TODO
-    }
 }

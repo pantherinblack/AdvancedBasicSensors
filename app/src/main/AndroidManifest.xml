@@ -15,7 +15,7 @@
         <service
             android:name=".service.SettingsService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
         <service
             android:name=".service.WeatherService"
             android:enabled="true"
@@ -30,10 +30,7 @@
             android:exported="true" />
 
         <activity
-            android:name=".activity.sensor.HumiditySensorActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.sensor.TemperatureSensorActivity"
+            android:name=".activity.sensor.SensorActivity"
             android:exported="false" />
         <activity
             android:name=".activity.SettingsActivity"
