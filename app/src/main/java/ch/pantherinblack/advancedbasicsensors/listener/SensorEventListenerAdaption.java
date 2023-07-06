@@ -9,6 +9,22 @@ public abstract class SensorEventListenerAdaption implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        // TODO
+        setLatestValue(sensorEvent.values);
+    }
+
+    public float[] getLatestValue() {
+        return latestValue;
+    }
+
+    public void setLatestValue(float[] latestValue) {
+        this.latestValue = latestValue;
+    }
+
+    public int getSensorType() {
+        return sensorType;
+    }
+
+    public void setSensorType(int sensorType) {
+        this.sensorType = sensorType;
     }
 }
