@@ -1,6 +1,7 @@
 package ch.pantherinblack.advancedbasicsensors.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -12,6 +13,12 @@ public class SensorService extends ServiceManager {
     List<Integer> allowedSensors = new ArrayList<>();
     List<Integer> accelerometer = new ArrayList<>();
     List<Integer> rotation = new ArrayList<>();
+    public static final int DISTANCE_METER = 0;
+    public static final int DISTANCE_IMPERIAL = 1;
+
+    public static final int TEMPERATURE_CELSIUS = 0;
+    public static final int TEMPERATURE_KELVIN = 1;
+    public static final int TEMPERATURE_FAHRENHEIT = 2;
 
 
     public SensorService() {
@@ -59,14 +66,25 @@ public class SensorService extends ServiceManager {
 
     public String[] getStringValues(Sensor sensor, float[] data) {
         if (data == null || data.length == 0)
-            data = new float[]{1, 1, 1};
+            data = new float[]{0, 0, 0};
+        SharedPreferences sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
+        int distance =  sharedPref.getInt("distance", 0);
+        int temperature = sharedPref.getInt("temperature",0);
 
 
         List<String> strings = new ArrayList<>();
         if (accelerometer.contains(sensor.getType())) {
-            strings.add("x: " + data[0] + "m/s");
-            strings.add("y: " + data[1] + "m/s");
-            strings.add("z: " + data[2] + "m/s");
+            String type = "m/s";
+            if (distance == DISTANCE_IMPERIAL) {
+                type = "mph";
+                data[0] = data[0]*2.237f;
+                data[1] = data[1]*2.237f;
+                data[2] = data[2]*2.237f;
+            }
+
+            strings.add("x: " + data[0] + type);
+            strings.add("y: " + data[1] + type);
+            strings.add("z: " + data[2] + type);
         } else if (rotation.contains(sensor.getType())) {
             strings.add("x-rot: " + data[0] + "°");
             strings.add("y-rot: " + data[1] + "°");
@@ -80,7 +98,15 @@ public class SensorService extends ServiceManager {
                     strings.add("z-rot: " + data[2] + "°/s");
                     break;
                 case Sensor.TYPE_AMBIENT_TEMPERATURE:
-                    strings.add("Temp: " + data[0] + "°C");
+                    String type = "°C";
+                    if (temperature == TEMPERATURE_KELVIN) {
+                        type = "°K";
+                        data[0] = data[0] + 273.15f;
+                    } else if (temperature == TEMPERATURE_FAHRENHEIT) {
+                        type = "°F";
+                        data[0] = data[0]* 9/5 + 32;
+                    }
+                    strings.add("Temp: " + data[0] + type);
                     break;
                 case Sensor.TYPE_MAGNETIC_FIELD:
                     strings.add("x: " + data[0] + "uT");
@@ -97,7 +123,12 @@ public class SensorService extends ServiceManager {
                     strings.add("Pressure: " + data[0] + "hPa");
                     break;
                 case Sensor.TYPE_PROXIMITY:
-                    strings.add("Distance: " + data[0] + "cm");
+                    type = "cm";
+                    if (distance == 1) {
+                        type = "inch";
+                        data[0] = data[0] * 39.3701f;
+                    }
+                    strings.add("Distance: " + data[0] + type);
                     break;
                 case Sensor.TYPE_RELATIVE_HUMIDITY:
                     strings.add("Humidity: " + data[0] + "%");
@@ -112,7 +143,6 @@ public class SensorService extends ServiceManager {
                     strings.add("Unknown Sensor");
             }
         }
-
         return strings.toArray(new String[0]);
     }
 
