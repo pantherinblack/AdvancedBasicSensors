@@ -6,6 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+    <RadioGroup
+        android:id="@+id/temperatureRadioGroup"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
+
+        <TextView
+            android:id="@+id/temperatureRadioNaming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/temperature_text"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/celsiusRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/celsius" />
+
+        <RadioButton
+            android:id="@+id/kelvinRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/kelvin" />
+
+        <RadioButton
+            android:id="@+id/fahrenheitRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fahrenheit" />
+    </RadioGroup>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
@@ -40,12 +77,35 @@
             tools:ignore="ImageContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ScrollView
-        android:layout_width="409dp"
-        android:layout_height="564dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+    <RadioGroup
+        android:id="@+id/distanceRadioGroup"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"/>
+        app:layout_constraintTop_toBottomOf="@+id/temperatureRadioGroup">
+
+        <TextView
+            android:id="@+id/distanceRadioNaming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/distanceText"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/metricRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/metric" />
+
+        <RadioButton
+            android:id="@+id/imperialRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/imperial" />
+
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
