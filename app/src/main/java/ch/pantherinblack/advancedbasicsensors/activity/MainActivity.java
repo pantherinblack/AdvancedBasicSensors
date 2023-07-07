@@ -63,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
             sensorService = (SensorService) binder.getService();
-            loadSensors();
+
+            Intent intent = new Intent(MainActivity.this, GPSService.class);
+            bindService(intent,connection2, Context.BIND_AUTO_CREATE);
         }
 
         @Override
@@ -78,13 +80,10 @@ public class MainActivity extends AppCompatActivity {
             ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
             gpsService = (GPSService) binder.getService();
 
-            Intent intent = new Intent(MainActivity.this, GPSService.class);
-            startActivity(intent);
+            loadSensors();
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            loadSensors();
-        }
+        public void onServiceDisconnected(ComponentName componentName) {}
     };
 }
