@@ -29,11 +29,21 @@ public class GPSService extends ServiceManager {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
     }
 
-    public String getPostalCode(float longitude, float latitude) {
+    public String getPostalCode(double longitude, double latitude) {
         try {
             return new Geocoder(this).
-                    getFromLocation(longitude, latitude, 1).get(0)
+                    getFromLocation(latitude,longitude, 1).get(0)
                     .getPostalCode();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getCityName(double longitude, double latitude) {
+        try {
+            return new Geocoder(this).
+                    getFromLocation(latitude,longitude, 1).get(0)
+                    .getAdminArea();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

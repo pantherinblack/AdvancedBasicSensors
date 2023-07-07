@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,11 +14,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import ch.pantherinblack.advancedbasicsensors.R;
 import ch.pantherinblack.advancedbasicsensors.activity.SensorActivity;
+import ch.pantherinblack.advancedbasicsensors.service.GPSService;
 import ch.pantherinblack.advancedbasicsensors.service.SensorService;
 
 /**
@@ -40,11 +44,18 @@ public class SensorListItemFragment extends Fragment {
     public static SensorListItemFragment newInstance(Sensor sensor, AppCompatActivity parent) {
         SensorListItemFragment fragment = new SensorListItemFragment();
         Bundle args = new Bundle();
-        args.putString(NAME, sensor.getName());
+        if (sensor != null)
+            args.putString(NAME, sensor.getName());
+        else
+            args.putString(NAME, "GPS");
 
         fragment.sensor = sensor;
         fragment.parent = parent;
-        fragment.name = sensor.getStringType();
+
+        if (sensor != null)
+            fragment.name = sensor.getName();
+        else
+            fragment.name = "GPS";
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,6 +69,14 @@ public class SensorListItemFragment extends Fragment {
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {}
+        };
+    }
+
+    public LocationListener getLocationListener(GPSService gpsService) {
+        return location -> {
+            String postalCode = gpsService.getCityName(location.getLongitude(), location.getLatitude());
+            String[] values = {"Long:" + location.getLongitude(), "Lat: " + location.getLatitude(), postalCode};
+            update(values);
         };
     }
 
