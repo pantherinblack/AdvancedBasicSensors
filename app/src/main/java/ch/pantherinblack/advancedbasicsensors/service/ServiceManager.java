@@ -10,15 +10,15 @@ import androidx.annotation.Nullable;
 public class ServiceManager extends Service {
     private final IBinder binder = new ServiceManagerBinder();
 
-    public class ServiceManagerBinder extends Binder {
-        public ServiceManager getService() {
-            return ServiceManager.this;
-        }
-    }
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
+    }
+
+    public class ServiceManagerBinder extends Binder {
+        public ServiceManager getService() {
+            return ServiceManager.this;
+        }
     }
 }

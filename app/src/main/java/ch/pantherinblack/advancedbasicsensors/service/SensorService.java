@@ -10,15 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SensorService extends ServiceManager {
-    List<Integer> allowedSensors = new ArrayList<>();
-    List<Integer> accelerometer = new ArrayList<>();
-    List<Integer> rotation = new ArrayList<>();
     public static final int DISTANCE_METER = 0;
     public static final int DISTANCE_IMPERIAL = 1;
-
     public static final int TEMPERATURE_CELSIUS = 0;
     public static final int TEMPERATURE_KELVIN = 1;
     public static final int TEMPERATURE_FAHRENHEIT = 2;
+    List<Integer> allowedSensors = new ArrayList<>();
+    List<Integer> accelerometer = new ArrayList<>();
+    List<Integer> rotation = new ArrayList<>();
 
 
     public SensorService() {
@@ -59,7 +58,7 @@ public class SensorService extends ServiceManager {
             if (sensorManager.getDefaultSensor(sensor.getType()) != null &&
                     allowedSensors.contains(sensor.getType())) {
                 sensorList.add(sensor);
-                    }
+            }
         }
         return sensorList;
     }
@@ -68,8 +67,8 @@ public class SensorService extends ServiceManager {
         if (data == null || data.length == 0)
             data = new float[]{0, 0, 0};
         SharedPreferences sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
-        int distance =  sharedPref.getInt("distance", DISTANCE_METER);
-        int temperature = sharedPref.getInt("temperature",TEMPERATURE_CELSIUS);
+        int distance = sharedPref.getInt("distance", DISTANCE_METER);
+        int temperature = sharedPref.getInt("temperature", TEMPERATURE_CELSIUS);
 
 
         List<String> strings = new ArrayList<>();
@@ -77,9 +76,9 @@ public class SensorService extends ServiceManager {
             String type = "m/s";
             if (distance == DISTANCE_IMPERIAL) {
                 type = "mph";
-                data[0] = data[0]*2.237f;
-                data[1] = data[1]*2.237f;
-                data[2] = data[2]*2.237f;
+                data[0] = data[0] * 2.237f;
+                data[1] = data[1] * 2.237f;
+                data[2] = data[2] * 2.237f;
             }
 
             strings.add("x: " + data[0] + type);
@@ -104,7 +103,7 @@ public class SensorService extends ServiceManager {
                         data[0] = data[0] + 273.15f;
                     } else if (temperature == TEMPERATURE_FAHRENHEIT) {
                         type = "°F";
-                        data[0] = data[0]* 9/5 + 32;
+                        data[0] = data[0] * 9 / 5 + 32;
                     }
                     strings.add("Temp: " + data[0] + type);
                     break;
@@ -137,7 +136,7 @@ public class SensorService extends ServiceManager {
                     strings.add("Steps: " + Math.round(data[0]) + " since starting the App");
                     break;
                 case Sensor.TYPE_HINGE_ANGLE:
-                    strings.add("Turn: "+ data[0] + "°");
+                    strings.add("Turn: " + data[0] + "°");
                     break;
                 default:
                     strings.add("Unknown Sensor");

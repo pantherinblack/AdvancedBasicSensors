@@ -25,13 +25,42 @@ import ch.pantherinblack.advancedbasicsensors.service.ServiceManager;
 
 public class MainActivity extends AppCompatActivity {
     List<SensorListItemFragment> fragmentList = new ArrayList<>();
+    SensorService sensorService;
+    GPSService gpsService;
+    ServiceConnection connection2 = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
+            gpsService = (GPSService) binder.getService();
+
+            loadSensors();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+    };
+    ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
+            sensorService = (SensorService) binder.getService();
+
+            Intent intent = new Intent(MainActivity.this, GPSService.class);
+            bindService(intent, connection2, Context.BIND_AUTO_CREATE);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(this, SensorService.class);
-        bindService(intent,connection, Context.BIND_AUTO_CREATE);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
         findViewById(R.id.settingsButton).setOnClickListener(view -> {
             Intent intent1 = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent1);
@@ -42,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         List<Sensor> sensors = sensorService.getAllSensors();
 
         try {
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 101);
             }
             SensorListItemFragment gpsSlim = SensorListItemFragment.newInstance(null, this);
@@ -67,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
             thread.start();
 
 
-        } catch (RuntimeException ignored) {}
+        } catch (RuntimeException ignored) {
+        }
 
         for (Sensor sensor : sensors) {
             SensorListItemFragment slim = SensorListItemFragment.newInstance(sensor, this);
@@ -84,34 +114,4 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
         fragmentList.add(slim);
     }
-
-    SensorService sensorService;
-    ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
-            sensorService = (SensorService) binder.getService();
-
-            Intent intent = new Intent(MainActivity.this, GPSService.class);
-            bindService(intent,connection2, Context.BIND_AUTO_CREATE);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {}
-    };
-
-    GPSService gpsService;
-
-    ServiceConnection connection2 = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
-            gpsService = (GPSService) binder.getService();
-
-            loadSensors();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {}
-    };
 }

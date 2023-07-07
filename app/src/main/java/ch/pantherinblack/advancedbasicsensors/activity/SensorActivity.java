@@ -27,7 +27,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import ch.pantherinblack.advancedbasicsensors.R;
@@ -37,7 +36,38 @@ import ch.pantherinblack.advancedbasicsensors.service.SensorService;
 import ch.pantherinblack.advancedbasicsensors.service.ServiceManager;
 
 public class SensorActivity extends AppCompatActivity {
-    private  int sensorType = Integer.MAX_VALUE;
+    SensorService sensorService;
+    GPSService gpsService;
+    private int sensorType = Integer.MAX_VALUE;
+    ServiceConnection connection2 = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
+            gpsService = (GPSService) binder.getService();
+
+            showSensor();
+            if (sensorType == Sensor.TYPE_AMBIENT_TEMPERATURE)
+                showWeather(gpsService);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+    };
+    ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
+            sensorService = (SensorService) binder.getService();
+
+            Intent intent = new Intent(SensorActivity.this, GPSService.class);
+            bindService(intent, connection2, Context.BIND_AUTO_CREATE);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +89,14 @@ public class SensorActivity extends AppCompatActivity {
         });
 
         Intent intent = new Intent(SensorActivity.this, SensorService.class);
-        bindService(intent,connection, Context.BIND_AUTO_CREATE);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
+
     public void showSensor() {
         sensorService.addSensorEventListener(new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                ((TextView)findViewById(R.id.sensorActivityName)).setText(sensorEvent.sensor.getName());
+                ((TextView) findViewById(R.id.sensorActivityName)).setText(sensorEvent.sensor.getName());
                 Sensor sensor = sensorEvent.sensor;
                 String name = "Name: " + sensor.getName();
                 String type = "Type: " + sensor.getStringType();
@@ -87,10 +118,10 @@ public class SensorActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {}
+            public void onAccuracyChanged(Sensor sensor, int i) {
+            }
         }, sensorType);
     }
-
 
     public void updateValues(String[] values) {
         LinearLayout linearLayout = findViewById(R.id.sensorActivityList);
@@ -132,7 +163,7 @@ public class SensorActivity extends AppCompatActivity {
 
                                     SharedPreferences sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
                                     float temp = weather.getCurrentWeather().getTemperature();
-                                    int temperature = sharedPref.getInt("temperature",SensorService.TEMPERATURE_CELSIUS);
+                                    int temperature = sharedPref.getInt("temperature", SensorService.TEMPERATURE_CELSIUS);
 
                                     String type = "°C";
                                     if (temperature == SensorService.TEMPERATURE_KELVIN) {
@@ -140,7 +171,7 @@ public class SensorActivity extends AppCompatActivity {
                                         temp = temp + 273.15f;
                                     } else if (temperature == SensorService.TEMPERATURE_FAHRENHEIT) {
                                         type = "°F";
-                                        temp = temp* 9/5 + 32;
+                                        temp = temp * 9 / 5 + 32;
                                     }
 
                                     String[] values = {"Location: " + gpsService.getCityName(
@@ -179,39 +210,4 @@ public class SensorActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-    SensorService sensorService;
-    ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
-            sensorService = (SensorService) binder.getService();
-
-            Intent intent = new Intent(SensorActivity.this, GPSService.class);
-            bindService(intent,connection2, Context.BIND_AUTO_CREATE);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {}
-    };
-
-    GPSService gpsService;
-
-    ServiceConnection connection2 = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            ServiceManager.ServiceManagerBinder binder = (ServiceManager.ServiceManagerBinder) service;
-            gpsService = (GPSService) binder.getService();
-
-            showSensor();
-            if (sensorType == Sensor.TYPE_AMBIENT_TEMPERATURE)
-                showWeather(gpsService);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {}
-    };
 }

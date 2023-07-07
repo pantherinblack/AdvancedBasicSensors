@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -33,9 +31,9 @@ public class SensorListItemFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String NAME = "sensorName";
     boolean started = false;
-    private String name;
     AppCompatActivity parent;
     Sensor sensor;
+    private String name;
 
     public SensorListItemFragment() {
         // Required empty public constructor
@@ -68,7 +66,8 @@ public class SensorListItemFragment extends Fragment {
             }
 
             @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {}
+            public void onAccuracyChanged(Sensor sensor, int i) {
+            }
         };
     }
 

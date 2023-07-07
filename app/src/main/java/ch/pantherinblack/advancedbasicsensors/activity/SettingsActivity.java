@@ -21,7 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
         RadioGroup distanceRadioGroup = findViewById(R.id.distanceRadioGroup);
         RadioGroup temperatureRadioGroup = findViewById(R.id.temperatureRadioGroup);
 
-        switch (sharedPref.getInt("distance",0 )) {
+        switch (sharedPref.getInt("distance", 0)) {
             case SensorService.DISTANCE_METER:
                 distanceRadioGroup.check(R.id.metricRadio);
                 break;
@@ -30,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
                 break;
         }
 
-        switch (sharedPref.getInt("temperature",0 )) {
+        switch (sharedPref.getInt("temperature", 0)) {
             case SensorService.TEMPERATURE_CELSIUS:
                 temperatureRadioGroup.check(R.id.celsiusRadio);
                 break;
@@ -61,10 +61,9 @@ public class SettingsActivity extends AppCompatActivity {
                 temperature = SensorService.TEMPERATURE_FAHRENHEIT;
 
 
-
             sharedPref.edit()
-                    .putInt("distance",distance)
-                    .putInt("temperature",temperature)
+                    .putInt("distance", distance)
+                    .putInt("temperature", temperature)
                     .apply();
 
             finish();
