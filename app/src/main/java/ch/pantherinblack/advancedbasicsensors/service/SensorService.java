@@ -125,7 +125,7 @@ public class SensorService extends ServiceManager {
                 case Sensor.TYPE_PROXIMITY:
                     type = "cm";
                     if (distance == 1) {
-                        type = "inch";
+                        type = " inch";
                         data[0] = data[0] * 39.3701f;
                     }
                     strings.add("Distance: " + data[0] + type);

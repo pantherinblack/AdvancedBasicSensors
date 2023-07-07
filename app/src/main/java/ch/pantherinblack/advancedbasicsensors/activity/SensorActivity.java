@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -129,9 +130,22 @@ public class SensorActivity extends AppCompatActivity {
                                         throw new RuntimeException(e);
                                     }
 
+                                    SharedPreferences sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
+                                    float temp = weather.getCurrentWeather().getTemperature();
+                                    int temperature = sharedPref.getInt("temperature",SensorService.TEMPERATURE_CELSIUS);
+
+                                    String type = "°C";
+                                    if (temperature == SensorService.TEMPERATURE_KELVIN) {
+                                        type = "°K";
+                                        temp = temp + 273.15f;
+                                    } else if (temperature == SensorService.TEMPERATURE_FAHRENHEIT) {
+                                        type = "°F";
+                                        temp = temp* 9/5 + 32;
+                                    }
+
                                     String[] values = {"Location: " + gpsService.getCityName(
                                             location.getLongitude(), location.getLatitude()),
-                                            "Temperature: " + weather.getCurrentWeather().getTemperature()};
+                                            "Temperature: " + temp + type};
                                     updateWeather(values);
                                 }
                             });
