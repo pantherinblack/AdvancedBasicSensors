@@ -9,7 +9,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragmentLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:fadingEdge="horizontal|vertical"
+        android:background="@drawable/rounded_corners">
 
         <TextView
             android:id="@+id/sensorName"
