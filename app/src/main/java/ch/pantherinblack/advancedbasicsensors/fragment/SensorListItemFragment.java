@@ -100,12 +100,13 @@ public class SensorListItemFragment extends Fragment {
         textView.setText(name);
         linearLayout.setGravity(Gravity.CENTER);
         started = true;
-
-        getView().findViewById(R.id.fragmentLayout).setOnClickListener(view -> {
-            Intent intent = new Intent(parent, SensorActivity.class);
-            intent.putExtra("type",sensor.getType());
-            startActivity(intent);
-        });
+        if (sensor != null) {
+            getView().findViewById(R.id.fragmentLayout).setOnClickListener(view -> {
+                Intent intent = new Intent(parent, SensorActivity.class);
+                intent.putExtra("type", sensor.getType());
+                startActivity(intent);
+            });
+        }
     }
 
     public void update(String[] values) {
