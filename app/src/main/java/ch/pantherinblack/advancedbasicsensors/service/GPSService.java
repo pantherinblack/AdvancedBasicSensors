@@ -9,6 +9,15 @@ import android.location.LocationManager;
 
 import androidx.core.app.ActivityCompat;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +35,7 @@ public class GPSService extends ServiceManager {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             throw new RuntimeException("Could not grant location permission");
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, locationListener);
     }
 
     public String getPostalCode(double longitude, double latitude) {
@@ -49,52 +58,11 @@ public class GPSService extends ServiceManager {
         }
     }
 
-    public Weather getWeather(String postalCode) {
-        Weather weather = null;
-        Thread thread = new Thread(() -> {
-            try {
-                HttpURLConnection urlConnection = null;
-                try {
-                    URL url = new URL("https://httpbin.org/post");
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("POST");
-                    urlConnection.setRequestProperty("Accept", "application/json");
-                    urlConnection.setDoOutput(true);
-                    urlConnection.setChunkedStreamingMode(0);
+    public void getWeather(String postalCode, Response.Listener<String> resList) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail?plz=" + postalCode + "00";
 
-
-                    String text = "";
-                    try (BufferedReader br = new BufferedReader(
-                            new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8))) {
-                        StringBuilder response = new StringBuilder();
-                        String responseLine;
-                        while ((responseLine = br.readLine()) != null) {
-                            response.append(responseLine.trim());
-                        }
-                        text = response.toString();
-                    }
-
-                    // TODO create weather object
-
-                    notify();
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    assert urlConnection != null;
-                    urlConnection.disconnect();
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
-        try {
-            wait();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return weather;
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, resList, error -> {});
+        queue.add(stringRequest);
     }
 }
