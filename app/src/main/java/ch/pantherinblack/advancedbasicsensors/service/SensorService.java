@@ -68,8 +68,8 @@ public class SensorService extends ServiceManager {
         if (data == null || data.length == 0)
             data = new float[]{0, 0, 0};
         SharedPreferences sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
-        int distance =  sharedPref.getInt("distance", 0);
-        int temperature = sharedPref.getInt("temperature",0);
+        int distance =  sharedPref.getInt("distance", DISTANCE_METER);
+        int temperature = sharedPref.getInt("temperature",TEMPERATURE_CELSIUS);
 
 
         List<String> strings = new ArrayList<>();
