@@ -145,44 +145,46 @@ public class SensorActivity extends AppCompatActivity {
         gpsService.addLocationListener(new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                new Thread(() -> {
-                    gpsService.getWeather(
-                            gpsService.getPostalCode(
-                                    location.getLongitude(),
-                                    location.getLatitude()),
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-                                    Weather weather = new Weather();
+                try {
+                    new Thread(() -> {
+                        gpsService.getWeather(
+                                gpsService.getPostalCode(
+                                        location.getLongitude(),
+                                        location.getLatitude()),
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        Weather weather = new Weather();
 
-                                    try {
-                                        weather.fillFromJSON(new JSONObject(response));
-                                    } catch (JSONException e) {
-                                        throw new RuntimeException(e);
+                                        try {
+                                            weather.fillFromJSON(new JSONObject(response));
+                                        } catch (JSONException e) {
+                                            throw new RuntimeException(e);
+                                        }
+
+                                        SharedPreferences sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
+                                        float temp = weather.getCurrentWeather().getTemperature();
+                                        int temperature = sharedPref.getInt("temperature", SensorService.TEMPERATURE_CELSIUS);
+
+                                        String type = "°C";
+                                        if (temperature == SensorService.TEMPERATURE_KELVIN) {
+                                            type = "°K";
+                                            temp = temp + 273.15f;
+                                        } else if (temperature == SensorService.TEMPERATURE_FAHRENHEIT) {
+                                            type = "°F";
+                                            temp = temp * 9 / 5 + 32;
+                                        }
+
+                                        String[] values = {"Location: " + gpsService.getCityName(
+                                                location.getLongitude(), location.getLatitude()),
+                                                "Temperature: " + temp + type};
+                                        updateWeather(values);
                                     }
-
-                                    SharedPreferences sharedPref = getSharedPreferences("settings", MODE_PRIVATE);
-                                    float temp = weather.getCurrentWeather().getTemperature();
-                                    int temperature = sharedPref.getInt("temperature", SensorService.TEMPERATURE_CELSIUS);
-
-                                    String type = "°C";
-                                    if (temperature == SensorService.TEMPERATURE_KELVIN) {
-                                        type = "°K";
-                                        temp = temp + 273.15f;
-                                    } else if (temperature == SensorService.TEMPERATURE_FAHRENHEIT) {
-                                        type = "°F";
-                                        temp = temp * 9 / 5 + 32;
-                                    }
-
-                                    String[] values = {"Location: " + gpsService.getCityName(
-                                            location.getLongitude(), location.getLatitude()),
-                                            "Temperature: " + temp + type};
-                                    updateWeather(values);
-                                }
-                            });
+                                });
 
 
-                }).start();
+                    }).start();
+                } catch (RuntimeException ignored) {}
 
             }
         });
